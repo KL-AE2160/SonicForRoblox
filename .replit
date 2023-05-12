@@ -1,4 +1,4 @@
-entrypoint = "MainScript.lua"
+entrypoint = "NewMainScript.lua"
 
 [interpreter]
 command = [
