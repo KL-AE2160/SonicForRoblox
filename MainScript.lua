@@ -1,86 +1,58 @@
-repeat task.wait() until game:IsLoaded()
-local sonicInjected = true
-local gameCamera = workspace.CurrentCamera
-local textService = game:GetService("TextService")
-local playersService = game:GetService("Players")
-local inputService = game:GetService("UserInputService")
-local isfile = isfile or function(file)
-	local suc, res = pcall(function() return readfile(file) end)
-	return suc and res ~= nil
+repeat task.wait() until gam:IsLoaded()
+if not identityexecutor then
+  game:GetService("Players").LocalPlayer:Kick("[UnknownExecutor]: Missing identifyexecutor.")
 end
-local setidentity = syn and syn.set_thread_identity or set_thread_identity or setidentity or setthreadidentity or function() end
-local getidentity = syn and syn.get_thread_identity or get_thread_identity or getidentity or getthreadidentity or function() return 0 end 
--- Stolen From Vape heheheheh ⬆️ 💀 ⬇️
-if getcustomasset then 
-	local suc, res = pcall(function() return getcustomasset("") end)
-	if suc and res == "rbxasset://textures/ui/WarningIcon.png" then
-		--mobile exploit fix
-		getgenv().getsynasset = nil
-		getgenv().getcustomasset = nil
-		-- why is this needed
-		getsynasset = nil
-		getcustomasset = nil
-	end
+local isfile = isfile or function(x)
+  local suc, res = pcall(function() return readfile(x) end)
+  return suc and res ~= nil
 end
-local queueonteleport = syn and syn.queue_on_teleport or queue_on_teleport or function() end
-local delfile = delfile or function(file) writefile(file, "") end
-
-local function displayErrorPopup(text, funclist)
-	local oldidentity = getidentity()
-	setidentity(8)
-	local ErrorPrompt = getrenv().require(game:GetService("CoreGui").RobloxGui.Modules.ErrorPrompt)
-	local prompt = ErrorPrompt.new("Default")
-	prompt._hideErrorCode = true
-	local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-	prompt:setErrorTitle("Sonic")
-	local funcs
-	if funclist then 
-		funcs = {}
-		local num = 0
-		for i,v in pairs(funclist) do 
-			num = num + 1
-			table.insert(funcs, {
-				Text = i,
-				Callback = function() 
-					prompt:_close() 
-					v()
-				end,
-				Primary = num == #funclist
-			})
-		end
-	end
-	prompt:updateButtons(funcs or {{
-		Text = "OK",
-		Callback = function() 
-			prompt:_close() 
-		end,
-		Primary = true
-	}}, 'Default')
-	prompt:setParent(gui)
-	prompt:_open(text)
-	setidentity(oldidentity)
+local delfile = delfile or function(x) return writefile(x, "") end
+local suc, whitelist = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/KL-AE2160/SonicForRoblox/main/whitelist.json") end)
+local TextService = game:GetService"TextService"
+local Players = game:GetService"Players"
+local TextChatService = game:GetService"TextChatService"
+local InputService = game:GetService"UserInputService"
+local RunService = game:GetService"RunService"
+local TweenService = game:GetService"TweenService"
+local CollectionService = game:GetService"CollectionService"
+local ReplicatedStorage = game:GetService"ReplicatedStorage"
+local ChatTable
+local ChatFunction
+if getconnections then
+  for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do
+    if v.Function and #debug.getupvalues(v.Function) > 0 and type(debug.getupvalues(v.Function)[1]) == "table" and getmetatable(debug.getupvalues(v.Function)[1]) and getmetatable(debug.getupvalues(v.Function)[1]).GetChannel then
+      ChatTable = getmetatable(debug.getupvalues(v.Function)[1])
+      ChatFunction = getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
+      getmetatable(debug.getupvalues(v.Function)[1]).GetChannel = function(Self, Name)
+        local tab = ChatFunction(Self, Name)
+        if tab and tab.AddMessageToChannel then
+          local AddMsg = tab.AddMessageToChannel
+          if ChatFunction[tab] == nil then
+            ChatFunction[tab] = tab.AddMessageToChannel
+          end
+          tab.AddMessageToChannel = function(Selx, MessageData)
+            if MessageData.FromSpeaker and Players[MessageData.FromSpeaker] then
+              local plr = Players[MessageData.FromSpeaker]
+              local pos = whitelist[plr.UserId] and whitelist[plr.UserId].Position
+              local tag = whitelist[plr.UserId] and whitelist[plr.UserId].Tag
+              if pos == 4 then
+                MessageData.ExtraData = {
+                  NameColor = Color3.fromRGB(255, 255, 255),
+                  Tags = {
+                    table.unpack(MessageData.ExtraData.Tags),
+                    {
+                      TagColor = Color3.new(1, 0.3, 0.3),
+                      TagText = tag or "SONIC OWNER"
+                    }
+                  }
+                }
+              end
+            end
 end
--- Stealing End --
-
-local vWarn = "rbxassetid://13350794868"
-local vInfo = "rbxassetid://13350774006" -- Icons Stolen From VapeV4
-assert(not shared.SonicExe, "Sonic Already Injected!")
-shared.SonicExe = true
-shared.SonicInjected = true
-if not isfolder("sonic") then
-  makefolder("sonic")
-end
-loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-if shared.Developer then
-  if isfile("sonic/CustomModules/"..game.PlaceId..".lua") then 
-    loadstring(readfile("sonic/CustomModules/"..game.PlaceId..".lua"))()
-  else
-    local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/KL-AE2160/SonicForRoblox/main/CustomModules/"..game.PlaceId..".lua") end)
-    if not suc or res == "404: Not Found" then return end
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/KL-AE2160/SonicForRoblox/main/CustomModules/"..game.PlaceId..".lua"))()
+          end
+        end
+        return tab
+      end
+    end
   end
-else
-  local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/KL-AE2160/SonicForRoblox/main/CustomModules/"..game.PlaceId..".lua") end)
-    if not suc or res == "404: Not Found" then return end
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/KL-AE2160/SonicForRoblox/main/CustomModules/"..game.PlaceId..".lua"))()
 end
